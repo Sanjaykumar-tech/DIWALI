@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>DIWALI COSMIC — A Celebration Beyond the Stars</title>
+  <meta name="description" content="DIWALI COSMIC — an immersive cinematic Diwali celebration.">
+  <meta name="theme-color" content="#05060f">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%2305060f' stroke='%23f0d28c' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23f0d28c'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <noscript><p class="noscript">DIWALI COSMIC needs JavaScript enabled.</p></noscript>
+
+  <main id="app" data-phase="loading" data-state="IDLE">
+
+    <!-- Layer 1: Cinematic Videos -->
+    <div id="video-stage" aria-hidden="true">
+      <video id="video-a" class="scene-video" playsinline webkit-playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
+      <video id="video-b" class="scene-video" playsinline webkit-playsinline preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
+    </div>
+
+    <!-- Layer 2: Three.js Effects -->
+    <canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+    <!-- Layer 3: CSS Effects & Trail -->
+    <div class="fx-css" aria-hidden="true">
+      <div id="rays" class="rays"></div>
+      <div class="smoke"><i></i><i></i><i></i></div>
+      <div id="scrim" class="scrim"></div>
+      <div id="flare" class="flare"></div>
+      <div class="vignette"></div>
+      <div id="cursor-trail" class="cursor-trail"></div>
+    </div>
+
+    <!-- Introduction -->
+    <section id="intro" class="screen" hidden aria-labelledby="intro-title">
+      <div class="intro-inner">
+        <h1 id="intro-title" class="title glow">DIWALI COSMIC</h1>
+        <p class="tagline">A CELEBRATION BEYOND THE STARS</p>
+        <p class="lede">LIGHT THE FUSE. IGNITE THE CELEBRATION.</p>
+        <div style="margin-bottom: 20px;">
+          <p id="live-countdown" class="countdown-pill">Live Countdown: ...</p>
+        </div>
+        <button id="btn-begin" class="btn btn-gold" type="button">BEGIN EXPERIENCE</button>
+      </div>
+    </section>
+
+    <!-- Interactive Matchstick -->
+    <section id="interaction" class="screen" hidden aria-label="Light the fuse">
+      <div id="match-stage" tabindex="0" role="application" aria-label="Interactive matchstick.">
+        <canvas id="match-canvas"></canvas>
+      </div>
+      <div class="interaction-hud">
+        <p id="interaction-hint" class="hint" aria-live="polite">Drag the lit match to the fuse</p>
+        <button id="btn-ignite" class="btn btn-ghost" type="button">TAP TO IGNITE</button>
+      </div>
+    </section>
+
+    <!-- Final Greeting & Diya Wall -->
+    <section id="finale" class="screen" hidden aria-labelledby="finale-title">
+      <div class="finale-inner">
+        <h2 id="finale-title" class="finale-title" style="cursor: pointer;" title="Tap me 5 times...">
+          <span id="finale-l1" class="line l1 glow">HAPPY DIWALI</span>
+          <span id="finale-l2" class="line l2 glow">TO ALL</span>
+        </h2>
+
+        <p id="secret-msg" class="finale-msg" style="color: var(--fire); font-size: 0.9rem; opacity: 0; transition: opacity 0.5s; margin-top: 10px;">✨ You found the secret! ✨</p>
+
+        <p class="finale-msg">May your life be filled with endless light.</p>
+
+        <div id="diya-wall" class="diya-wall"></div>
+
+        <div class="finale-actions">
+          <button id="btn-replay" class="btn btn-gold" type="button">REPLAY CELEBRATION</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- HUD Controls -->
+    <div id="hud">
+      <div class="hud-top">
+        <div class="hud-brand">DIWALI COSMIC</div>
+        <div class="hud-actions">
+          <select id="quality-select" class="quality-select">
+            <option value="auto">Auto</option>
+            <option value="low">Low</option>
+            <option value="med">Med</option>
+            <option value="high">High</option>
+          </select>
+          <button id="btn-hud-replay" class="icon-btn" type="button" aria-label="Replay celebration" title="Replay (R)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+          </button>
+          <button id="btn-sound" class="icon-btn" type="button" aria-label="Turn sound on" aria-pressed="false" title="Sound (M)">
+            <svg id="icon-sound-on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+            <svg id="icon-sound-off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+          </button>
+          <button id="btn-fullscreen" class="icon-btn" type="button" aria-label="Enter full screen" title="Full screen (F)">
+            <svg id="icon-fs-enter" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            <svg id="icon-fs-exit" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hud-bottom">
+        <div id="scene-label" class="scene-label" aria-live="polite"></div>
+        <div id="progress" class="progress" role="progressbar" aria-label="Celebration progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+      </div>
+      <div id="buffering" class="buffering" hidden role="status" aria-label="Buffering"></div>
+    </div>
+
+    <div id="flash" aria-hidden="true"></div>
+
+    <!-- Dialog -->
+    <div id="dialog" class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-body" hidden>
+      <div class="dialog-card">
+        <h3 id="dialog-title"></h3>
+        <p id="dialog-body"></p>
+        <ul id="dialog-list"></ul>
+        <div id="dialog-actions" class="dialog-actions"></div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading" role="status" aria-live="polite">
+      <div class="loading-inner">
+        <div class="loading-ring" aria-hidden="true"></div>
+        <p class="loading-title">DIWALI COSMIC</p>
+        <div class="loading-bar" aria-hidden="true"><i id="loading-fill"></i></div>
+        <p id="loading-text" class="loading-text">Preparing the cosmos… 0%</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('SW Registered', reg);
+        }).catch(err => console.log('SW registration failed', err));
+      });
+    }
+  </script>
+</body>
+</html>

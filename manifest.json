@@ -1,0 +1,16 @@
+{
+  "name": "Diwali Cosmic",
+  "short_name": "Diwali",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#05060f",
+  "theme_color": "#f0d28c",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%2305060f' stroke='%23f0d28c' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23f0d28c'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
